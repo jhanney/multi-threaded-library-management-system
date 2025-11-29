@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import model.User;
+
 
 public class ConnectionHandler extends Thread {
 	
@@ -56,6 +58,23 @@ public class ConnectionHandler extends Thread {
 	catch(IOException ioException){
 		ioException.printStackTrace();
 	}
+	}
+	
+	public void registerUser() {
+		
+		try {
+			sendMessage("Enter your name");
+			String name = (String) in.readObject();
+			
+			
+			
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 }
