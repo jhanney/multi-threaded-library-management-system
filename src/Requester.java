@@ -20,6 +20,7 @@ public class Requester{
 			
 			requestSocket = new Socket("127.0.0.1", 2004);
 			System.out.println("Connected to localhost in port 2004");
+			System.out.println("Test Commit");
 			//2. get Input and Output streams
 			out = new ObjectOutputStream(requestSocket.getOutputStream());
 			out.flush();
