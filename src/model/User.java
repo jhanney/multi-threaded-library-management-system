@@ -9,8 +9,8 @@ public class User {
 	private String password;
 	private String department;
 	private String role;
-	
-	//constructor with fields 
+
+	// constructor with fields
 	public User(String name, String studentId, String email, String password, String department, String role) {
 		super();
 		this.name = name;

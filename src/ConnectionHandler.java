@@ -2,10 +2,19 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import model.User;
 
 
 public class ConnectionHandler extends Thread {
+	
+	public static final Set<String> usedIds = new HashSet<>(); //hashset to store usedIds, using a hashset as all items added must be unique
+	public static final Map<String, User> users = new HashMap<>(); //String used as key, User object containing all user details as the value 
+	
 	
 	private Socket connection;
 	private ObjectOutputStream out;
@@ -60,13 +69,52 @@ public class ConnectionHandler extends Thread {
 	}
 	}
 	
+	/**
+	 * Handles user registration.
+	 * Prompts the client for user details (Name, Student ID, Email, Password, Department, and Role),
+	 * validates that the Student ID and Email are unique, and creates a new User object.
+	 * Adds the new user to the server's user list if registration is successful.**/
+	
+	
 	public void registerUser() {
 		
 		try {
-			sendMessage("Enter your name");
+			sendMessage("Enter your name");//ask for name
 			String name = (String) in.readObject();
 			
+			sendMessage("Enter Student ID:");//ask for id and check hashset
+			String id = (String) in.readObject();
+			if(usedIds.contains(id)) {
+				sendMessage("An account with Student ID: " + id + " already exists. Try again"); 
+				return; 
+			}
 			
+			//ask for email and check
+			sendMessage("Enter Email: ");
+			String email = (String) in.readObject();
+			if(users.containsKey(email)) {
+				sendMessage("An account with the email: " + email + " already exists. Try again");
+				return; 
+			}
+			
+			//get password
+		    sendMessage("Enter Password:");
+		    String password = (String) in.readObject();
+
+		    //department
+		    sendMessage("Enter Department:");
+		    String department = (String) in.readObject();
+
+		    //role
+		    sendMessage("Enter Role (Student / Librarian):");
+		    String role = (String) in.readObject();
+			
+
+		    User newUser = new User(name, id, email, password, department, role);
+		    users.put(email, newUser);
+		    usedIds.add(id);
+		    
+		    sendMessage("Registration has been successful!!");
 			
 			
 		} catch (Exception e) {
