@@ -28,6 +28,20 @@ public class Requester{
 			
 			
 			///Client Conversation......
+			while(true) {
+				try {
+					// Read message from server
+					message = (String) in.readObject();
+					System.out.println("Server> " + message);
+					
+					System.out.print("You> ");
+					message = input.nextLine();
+					sendMessage(message);//send message to the server 
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		catch(UnknownHostException unknownHost){
 			System.err.println("You are trying to connect to an unknown host!");

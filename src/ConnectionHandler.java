@@ -41,11 +41,7 @@ public class ConnectionHandler extends Thread {
 			String choice; 
 			int menuChoice = 0; 
 			/// Insert the Server Conversation......
-			sendMessage("WELCOME TO THE LIBRARY MANAGMENT SYSTEM"
-					+ "\nPlease choose one of the following options"
-					+ "\n1.Register"
-					+ "\n2.Login"
-					+ "\n8.Exit");
+			displayMenu();
 			
 			do {
 				
@@ -55,17 +51,20 @@ public class ConnectionHandler extends Thread {
 				switch(menuChoice) {
 				case 1:
 					registerUser();
+					displayMenu();
 				break; 
 				case 2:
 					loginUser();
+					displayMenu();
 				break; 
 				case 8:
+					exit();
 					return;
 				default:
 					sendMessage("Invalid choice. Please select a choice displayed on the menu");
 				}
 				
-			}while(menuChoice != 3); 
+			}while(menuChoice != 8); 
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -179,6 +178,20 @@ public class ConnectionHandler extends Thread {
 			e.printStackTrace();
 		}
 
+	}
+	
+	//exit method used to send message to client, allowing system to see exit has been chosen 
+	public void exit() {
+		String exitMessage = "Goodbye and have a good day.";
+		sendMessage(exitMessage);
+	}
+	
+	public void displayMenu() {
+		sendMessage("WELCOME TO THE LIBRARY MANAGEMENT SYSTEM"
+				+ "\nPlease choose one of the following options"
+				+ "\n1.Register"
+				+ "\n2.Login"
+				+ "\n8.Exit");
 	}
 
 }
