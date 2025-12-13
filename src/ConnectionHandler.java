@@ -37,8 +37,40 @@ public class ConnectionHandler extends Thread {
 		} catch (IOException classnot) {
 
 		}
+		try {
+			String choice; 
+			int menuChoice = 0; 
+			/// Insert the Server Conversation......
+			sendMessage("WELCOME TO THE LIBRARY MANAGMENT SYSTEM"
+					+ "\nPlease choose one of the following options"
+					+ "\n1.Register"
+					+ "\n2.Login"
+					+ "\n8.Exit");
+			
+			do {
+				
+				choice = (String) in.readObject();
+				menuChoice = Integer.parseInt(choice);
+				
+				switch(menuChoice) {
+				case 1:
+					registerUser();
+				break; 
+				case 2:
+					loginUser();
+				break; 
+				case 8:
+					return;
+				default:
+					sendMessage("Invalid choice. Please select a choice displayed on the menu");
+				}
+				
+			}while(menuChoice != 3); 
 
-		/// Insert the Server Conversation......
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("There has been an error in the Library Managment System");
+		}
 
 		// 4: Closing connection
 		try {
@@ -119,6 +151,7 @@ public class ConnectionHandler extends Thread {
 			String email = (String) in.readObject();
 			if(!users.containsKey(email)) {
 				sendMessage("This email has not been registered");
+				return; 
 			}
 			
 
