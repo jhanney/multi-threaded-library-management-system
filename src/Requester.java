@@ -34,9 +34,20 @@ public class Requester{
 					message = (String) in.readObject();
 					System.out.println("Server> " + message);
 					
+					if(message.contains("successful")) {
+						continue; 
+					}
+					
+					//check if server is saying goodbye
+					if (message.contains("Goodbye")|| message.contains("unsuccessful")) {
+						break;
+					}
+					
 					System.out.print("You> ");
 					message = input.nextLine();
 					sendMessage(message);//send message to the server 
+					
+					
 
 				} catch (Exception e) {
 					e.printStackTrace();

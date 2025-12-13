@@ -33,6 +33,7 @@ public class Provider
 		//2. Wait for connection
 		while(true)
 		{
+			System.out.println(ConnectionHandler.users);
 			System.out.println("Waiting for connection");
 			try 
 			{

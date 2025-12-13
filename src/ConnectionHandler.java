@@ -62,6 +62,7 @@ public class ConnectionHandler extends Thread {
 					return;
 				default:
 					sendMessage("Invalid choice. Please select a choice displayed on the menu");
+					displayMenu();
 				}
 				
 			}while(menuChoice != 8); 
@@ -149,7 +150,7 @@ public class ConnectionHandler extends Thread {
 			sendMessage("Please enter your email:");
 			String email = (String) in.readObject();
 			if(!users.containsKey(email)) {
-				sendMessage("This email has not been registered");
+				sendMessage("This email has not been registered, login unsuccessful");
 				return; 
 			}
 			
