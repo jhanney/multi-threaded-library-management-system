@@ -53,9 +53,9 @@ public class ConnectionHandler extends Thread {
 			
 			
 			do {
-				if(isAutheticated) {
-					authenticatedMenu();
-				}
+//				if(isAutheticated) {
+//					authenticatedMenu();
+//				}
 				
 				choice = (String) in.readObject();
 				menuChoice = Integer.parseInt(choice);
@@ -67,8 +67,10 @@ public class ConnectionHandler extends Thread {
 				break; 
 				case 2:
 					loginUser();
-					authenticatedMenu();
 				break; 
+				case 3:
+					createLibraryRecord();
+				break;
 				case 8:
 					exit();
 					return;
@@ -163,6 +165,7 @@ public class ConnectionHandler extends Thread {
 			String email = (String) in.readObject();
 			if(!users.containsKey(email)) {
 				sendMessage("This email has not been registered, login unsuccessful");
+				displayMenu();
 				return; 
 			}
 			
@@ -179,8 +182,6 @@ public class ConnectionHandler extends Thread {
 				if(!user.getPassword().equals(password)) {
 					sendMessage("Password incorrect please try again");
 				}
-
-			
 			}while(!user.getPassword().equals(password));
 			
 			isAutheticated = true;
@@ -188,7 +189,7 @@ public class ConnectionHandler extends Thread {
 			
 			sendMessage("Login successful! Welcome " + user.getName() );
 			
-			
+			authenticatedMenu();
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -223,6 +224,71 @@ public class ConnectionHandler extends Thread {
 		}else {
 			   sendMessage("You must log in to access these options.");
 		}
+	}
+	
+	public void createLibraryRecord() {
+		try {
+	        //is authenticated before allowing record creation
+	        if (!isAutheticated) {
+	            sendMessage("Please log in to create a library record.");
+	            return;
+	        }
+
+	        // Step 1:ask for record type
+	        sendMessage("Enter record type:"
+	                + "\n1. New Book Entry"
+	                + "\n2. Borrow Request");
+	        String recordChoice = (String) in.readObject();
+
+	        String recordType;
+	        String status;
+
+	        // Step 2:determine record type and status
+	        if (recordChoice.trim().equals("1")) {
+	            recordType = "New Book Entry";
+	            status = "Available";
+	        } else if (recordChoice.trim().equals("2")) {
+	            recordType = "Borrow Request";
+	            status = "Requested";
+	        } else {
+	            sendMessage("Invalid record type. Record creation cancelled.");
+	            return;
+	        }
+
+	        // Step 3:generate unique record ID
+	        int recordNumber = records.size() + 1; //assign next number to record
+	        String recordId = String.format("R%03d", recordNumber); //format the id With R + a number up to 3 digits
+
+	        // Step 4:gather other details
+	        String date = java.time.LocalDate.now().toString();
+	        String studentId = loggedInUser.getStudentId();
+	        String librarianId = "";
+
+	        // Step 5:create and store record
+	        LibraryRecord newRecord = new LibraryRecord(
+	                recordId,
+	                recordType,
+	                date,
+	                studentId,
+	                status,
+	                librarianId);
+
+	        records.add(newRecord);//add the new record
+
+	        // Step 6:confirm creation
+	        sendMessage("Record created successfully!"
+	                + "\nRecord ID: " + recordId
+	                + "\nType: " + recordType
+	                + "\nStatus: " + status);
+
+	        System.out.println("New record created: " + newRecord);
+	        
+	        authenticatedMenu();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        sendMessage("An error occurred while creating the record. Please try again.");
+	    }
 	}
 
 }
