@@ -2,11 +2,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import model.LibraryRecord;
 import model.User;
 
 public class ConnectionHandler extends Thread {
@@ -15,11 +18,16 @@ public class ConnectionHandler extends Thread {
 																// added must be unique
 	public static final Map<String, User> users = new HashMap<>(); // String used as key, User object containing all
 																	// user details as the value
-
+	public static final List<LibraryRecord> records = new ArrayList<>(); //hold all created library records 
+	
+	
 	private Socket connection;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message;
+	
+ 	boolean isAutheticated; //verify if users authenticated
+ 	User loggedInUser = null; 
 
 	public ConnectionHandler(Socket s) {
 		connection = s;
@@ -41,9 +49,13 @@ public class ConnectionHandler extends Thread {
 			String choice; 
 			int menuChoice = 0; 
 			/// Insert the Server Conversation......
-			displayMenu();
+				displayMenu();
+			
 			
 			do {
+				if(isAutheticated) {
+					authenticatedMenu();
+				}
 				
 				choice = (String) in.readObject();
 				menuChoice = Integer.parseInt(choice);
@@ -55,7 +67,7 @@ public class ConnectionHandler extends Thread {
 				break; 
 				case 2:
 					loginUser();
-					displayMenu();
+					authenticatedMenu();
 				break; 
 				case 8:
 					exit();
@@ -171,6 +183,9 @@ public class ConnectionHandler extends Thread {
 			
 			}while(!user.getPassword().equals(password));
 			
+			isAutheticated = true;
+			loggedInUser = user; 
+			
 			sendMessage("Login successful! Welcome " + user.getName() );
 			
 			
@@ -193,6 +208,21 @@ public class ConnectionHandler extends Thread {
 				+ "\n1.Register"
 				+ "\n2.Login"
 				+ "\n8.Exit");
+	}
+	
+	public void authenticatedMenu() {
+		if(isAutheticated) {
+		sendMessage("USER AUTHENTICATED"
+				+ "\nPlease choose one of the following options"
+				+ "\n3.Create a Library Record"
+				+ "\n4.Retrieve all registered book records"
+				+ "\n5.Assign a borrowing request"
+				+ "\n6.View all library records assigned to you"
+				+ "\n7.Update your password"
+				+ "\n8.Exit");
+		}else {
+			   sendMessage("You must log in to access these options.");
+		}
 	}
 
 }

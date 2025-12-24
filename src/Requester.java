@@ -3,6 +3,8 @@
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
+
+import model.User;
 public class Requester{
 	Socket requestSocket;
 	ObjectOutputStream out;
