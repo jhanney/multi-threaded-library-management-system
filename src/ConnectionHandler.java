@@ -71,6 +71,9 @@ public class ConnectionHandler extends Thread {
 				case 3:
 					createLibraryRecord();
 				break;
+				case 4:
+				    retrieveAllRecords();
+				    break;
 				case 8:
 					exit();
 					return;
@@ -290,5 +293,61 @@ public class ConnectionHandler extends Thread {
 	        sendMessage("An error occurred while creating the record. Please try again.");
 	    }
 	}
+	/**
+	 * displays all library records currently stored in the system.
+	 * 
+	 * This method allows authenticated users to view every record that has been 
+	 * created by all clients connected to the server. Each record includes 
+	 * details such as ID, type, date, status, student ID, and assigned librarian.
+	 * 
+	 * Step:
+	 * 1.verify that the user is authenticated.
+	 * 2.If no records exist, notify the client.
+	 * 3.If records exist, loop through the list and send each record’s details.
+	 * 4.show the authenticated menu again when finished.
+	 */
+	public void retrieveAllRecords() {
+	    try {
+	        //verify user authentication
+	        if (!isAutheticated) {
+	            sendMessage("Please log in to view library records.");
+	            return;
+	        }
+
+	        //check if there are any records stored in the system
+	        if (records.isEmpty()) {
+	            sendMessage("No library records found.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //header message before listing all records
+	        sendMessage("All Registered Library Records:");
+
+	        //lLoop through each record and display its details
+	        for (LibraryRecord record : records) {
+	            String recordDetails = "\nRecord ID: " + record.recordId()
+	                    + "\nType: " + record.recordType()
+	                    + "\nDate: " + record.date()
+	                    + "\nStatus: " + record.status()
+	                    + "\nStudent ID: " + record.studentId()
+	                    + "\nAssigned Librarian: "
+	                    + (record.librarianId().isEmpty() ? "None" : record.librarianId())
+	                    + "\n-----------------------------";
+
+	            //send each record’s details to the client
+	            sendMessage(recordDetails);
+	        }
+
+	        //show the authenticated menu again after listing records
+	        authenticatedMenu();
+
+	    } catch (Exception e) {
+	        
+	        e.printStackTrace();
+	        sendMessage("An error occurred while retrieving records. Please try again.");
+	    }
+	}
+
 
 }
