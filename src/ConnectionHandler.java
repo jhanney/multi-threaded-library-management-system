@@ -322,7 +322,7 @@ public class ConnectionHandler extends Thread {
 	        }
 
 	        //header message before listing all records
-	        sendMessage("All Registered Library Records:");
+	        sendMessage("Displaying All Registered Library Records:");
 
 	        //lLoop through each record and display its details
 	        for (LibraryRecord record : records) {
@@ -338,7 +338,7 @@ public class ConnectionHandler extends Thread {
 	            //send each record’s details to the client
 	            sendMessage(recordDetails);
 	        }
-
+	     
 	        //show the authenticated menu again after listing records
 	        authenticatedMenu();
 
