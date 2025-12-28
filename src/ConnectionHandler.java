@@ -125,15 +125,37 @@ public class ConnectionHandler extends Thread {
 	public void registerUser() {
 
 		try {
-			sendMessage("Enter your name");// ask for name
-			String name = (String) in.readObject();
+			
+			// role
+			sendMessage("Select your role:\n1. Student\n2. Librarian");
+			String roleChoice = (String) in.readObject();
+				
+			
+			String role;
+	        String idLabel; //to use correct wording in prompts
+	        
+	        if (roleChoice.trim().equals("1")) {
+	            role = "Student";
+	            idLabel = "Student ID";
+	        } else if (roleChoice.trim().equals("2")) {
+	            role = "Librarian";
+	            idLabel = "Librarian ID";
+	        } else {
+	            sendMessage("Invalid choice. Registration cancelled.");
+	            return;
+	        }
+			
+			
 
-			sendMessage("Enter Student ID:");// ask for id and check hashset
+			sendMessage("Enter your " + idLabel + ":");// ask for id and check hashset
 			String id = (String) in.readObject();
 			if (usedIds.contains(id)) {
 				sendMessage("An account with Student ID: " + id + " already exists. Try again");
 				return;
 			}
+			
+			sendMessage("Enter your name");// ask for name
+			String name = (String) in.readObject();
 
 			// ask for email and check
 			sendMessage("Enter Email: ");
@@ -151,15 +173,14 @@ public class ConnectionHandler extends Thread {
 			sendMessage("Enter Department:");
 			String department = (String) in.readObject();
 
-			// role
-			sendMessage("Enter Role (Student / Librarian):");
-			String role = (String) in.readObject();
+
 
 			User newUser = new User(name, id, email, password, department, role);
 			users.put(email, newUser);
 			usedIds.add(id);
 
-			sendMessage("Registration has been successful!!");
+			 sendMessage("Registration successful! Welcome, " + name + " (" + role + ")");
+		     System.out.println("New user registered: " + name + " (" + role + ")");
 
 		} catch (Exception e) {
 			// TODO: handle exception
