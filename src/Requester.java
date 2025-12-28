@@ -36,7 +36,9 @@ public class Requester{
 					message = (String) in.readObject();
 					System.out.println("Server> " + message);
 					
-					if(message.contains("successful")) {
+					//continue, to keep messaging loop in sync
+					if(message.contains("successful") || message.contains("unsuccessful") || message.contains("Try again")|| message.contains("Invalid")|| message.contains("Displaying")|| message.contains("Record ID: ")|| message.contains("No record found with ID: ")|| message.contains("No record found with ID: ")
+							|| message.contains("This record is not a borrowing request and cannot be assigned.")|| message.contains("This borrowing request has already been processed.")) {
 						continue; 
 					}
 					

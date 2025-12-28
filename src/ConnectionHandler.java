@@ -74,6 +74,10 @@ public class ConnectionHandler extends Thread {
 				case 4:
 				    retrieveAllRecords();
 				    break;
+				case 5:
+				    assignBorrowRequest();
+				    break;
+
 				case 8:
 					exit();
 					return;
@@ -348,6 +352,98 @@ public class ConnectionHandler extends Thread {
 	        sendMessage("An error occurred while retrieving records. Please try again.");
 	    }
 	}
+	
+	/**
+	 * assigns the borrowing request to a librarian and updates its status
+	 * 
+	 * the method allows a user to assign an existing Borrow Request record
+	 * to a librarian by providing the Record ID and the Librarian ID.
+	 * 
+	 * Steps:
+	 * 1.verify user authentication.
+	 * 2.ask for the Record ID and locate the corresponding record.
+	 * 3.validate that it is a Borrow Request and not already processed.
+	 * 4.ask for the Librarian ID to assign to
+	 * 5.update the records status to 'Borrowed' and set the librarian ID.
+	 * 6.confirm success and display the updated menu
+	 */
+	public void assignBorrowRequest() {
+	    try {
+	        //verify that user is logged in
+	        if (!isAutheticated) {
+	            sendMessage("Please log in before assigning borrowing requests.");
+	            return;
+	        }
+
+	        //ask for the record ID
+	        sendMessage("Enter the Record ID of the borrowing request to assign:");
+	        String requestedId = ((String) in.readObject()).trim();
+
+	        //find the record
+	        LibraryRecord recordToAssign = null;
+	        for (LibraryRecord r : records) {
+	            if (r.recordId().equalsIgnoreCase(requestedId)) {
+	                recordToAssign = r;
+	                break;
+	            }
+	        }
+
+	        //check if the record exists
+	        if (recordToAssign == null) {
+	            sendMessage("No record found with ID: " + requestedId);
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //make sure it is a borrow request
+	        if (!recordToAssign.recordType().equalsIgnoreCase("Borrow Request")) {
+	            sendMessage("This record is not a borrowing request and cannot be assigned.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //make sure it hasnt been processed already
+	        if (recordToAssign.status().equalsIgnoreCase("Borrowed")
+	                || recordToAssign.status().equalsIgnoreCase("Returned")) {
+	            sendMessage("This borrowing request has already been processed.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //ask for librarian ID to assign this request to
+	        sendMessage("Enter the Librarian ID to assign this request to:");
+	        String librarianId = ((String) in.readObject()).trim();
+
+	        //update record with librarian ID and new status
+	        String updatedStatus = "Borrowed";
+
+	        LibraryRecord updated = new LibraryRecord(
+	                recordToAssign.recordId(),
+	                recordToAssign.recordType(),
+	                recordToAssign.date(),
+	                recordToAssign.studentId(),
+	                updatedStatus,
+	                librarianId
+	        );
+
+	        //replace the old record with the updated one
+	        int index = records.indexOf(recordToAssign);
+	        records.set(index, updated);
+
+	        //confirm to user
+	        sendMessage("Borrow request " + requestedId + " has been successfully assigned!"
+	                + "\nStatus updated to: " + updatedStatus
+	                + "\nAssigned Librarian ID: " + librarianId);
+
+	        System.out.println("Record " + requestedId + " assigned to librarian " + librarianId);
+	        authenticatedMenu();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        sendMessage("An error occurred while assigning the borrowing request. Please try again.");
+	    }
+	}
+
 
 
 }
