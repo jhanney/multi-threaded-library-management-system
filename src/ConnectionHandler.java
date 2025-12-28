@@ -77,7 +77,9 @@ public class ConnectionHandler extends Thread {
 				case 5:
 				    assignBorrowRequest();
 				    break;
-
+				case 6:
+				    viewAssignedRecords();
+				    break;
 				case 8:
 					exit();
 					return;
@@ -444,6 +446,67 @@ public class ConnectionHandler extends Thread {
 	    }
 	}
 
+	/**
+	 * shows all library records assigned to the currently logged-in librarian.
+	 * 
+	 * This method filters the list of all records and shows only those
+	 * where the librarianId matches the logged-in user's student ID.
+	 * 
+	 * Steps:
+	 * 1 verify that the user is authenticated
+	 * 2 ensure the logged-in user has the 'Librarian' role
+	 * 3 filter records assigned to this librarian
+	 * 4. Display the matching records, or a message if none exist
+	 * 5 display the authenticated menu afterward
+	 */
+	public void viewAssignedRecords() {
+	    try {
+	        //verify authentication
+	        if (!isAutheticated) {
+	            sendMessage("Please log in before viewing assigned records.");
+	            return;
+	        }
+
+	        //ensure user is a librarian
+	        if (!loggedInUser.getRole().equalsIgnoreCase("Librarian")) {
+	            sendMessage("Access denied. Only librarians can view assigned records.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //find all records assigned to this librarian
+	        List<LibraryRecord> assignedRecords = new ArrayList<>();
+	        for (LibraryRecord record : records) {
+	            if (record.librarianId().equals(loggedInUser.getStudentId())) {
+	                assignedRecords.add(record);
+	            }
+	        }
+
+	        //display results
+	        if (assignedRecords.isEmpty()) {
+	            sendMessage("No records have been assigned to you.");
+	        } else {
+	            sendMessage("Displaying all records assigned to you:");
+	            for (LibraryRecord record : assignedRecords) {
+	                String recordDetails = "\nRecord ID: " + record.recordId()
+	                        + "\nType: " + record.recordType()
+	                        + "\nDate: " + record.date()
+	                        + "\nStatus: " + record.status()
+	                        + "\nStudent ID: " + record.studentId()
+	                        + "\n-----------------------------";
+	                sendMessage(recordDetails);
+	            }
+	        }
+
+	        //return to the authenticated menu
+	        authenticatedMenu();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        sendMessage("An error occurred while viewing assigned records. Please try again.");
+	        authenticatedMenu();
+	    }
+	}
 
 
 }
