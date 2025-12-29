@@ -24,4 +24,24 @@ public class DataPersistence {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Loads the list of registered users from the persistence file.
+     *
+     * This method attempts to read the serialized users Map from USER_FILE ("users.dat").
+     * If the file exists, it deserializes the stored user data and returns it.
+     * If the file does not exist or cannot be read, it prints a message and
+     * returns a new, empty HashMap to start fresh.
+     */
+    @SuppressWarnings("unchecked") // prevent a compiler warning about unchecked type casting
+    public static Map<String, User> loadUsers() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(USER_FILE))) {
+            return (Map<String, User>) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("No existing user data found. Starting fresh.");
+            return new HashMap<>();
+        }
+    }
+    
+    
 }
