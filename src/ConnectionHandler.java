@@ -80,6 +80,9 @@ public class ConnectionHandler extends Thread {
 				case 6:
 				    viewAssignedRecords();
 				    break;
+				case 7:
+				    updatePassword();
+				    break;
 				case 8:
 					exit();
 					return;
@@ -160,6 +163,14 @@ public class ConnectionHandler extends Thread {
 			// ask for email and check
 			sendMessage("Enter Email: ");
 			String email = (String) in.readObject();
+			
+			//validate email format
+			if (!email.contains("@") || 
+			    !(email.endsWith(".com") || email.endsWith(".ie") || email.endsWith(".co.uk"))) {
+			    sendMessage("Invalid email format. Please use a valid email (e.g., user@example.com, user@example.ie, user@example.co.uk).");
+			    return;
+			}
+			
 			if (users.containsKey(email)) {
 				sendMessage("An account with the email: " + email + " already exists. Try again");
 				return;
@@ -528,6 +539,64 @@ public class ConnectionHandler extends Thread {
 	        authenticatedMenu();
 	    }
 	}
+	
+	/**
+	 * lets a logged-in user to update their password
+	 * 
+	 * Steps:
+	 * 1 verify that the user is authenticated
+	 * 2. ask for the current password and validate it
+	 * 3. prompt for a new password twice for confirmation
+	 * 4. if confirmed, update the password in the system
+	 * 5.redisplay the authenticated menu
+	 */
+	public void updatePassword() {
+	    try {
+	        //ensure user is logged in
+	        if (!isAutheticated) {
+	            sendMessage("Please log in before updating your password.");
+	            return;
+	        }
 
+	        //ask for current password
+	        sendMessage("Enter your current password:");
+	        String currentPassword = (String) in.readObject();
 
+	        //verify current password
+	        if (!loggedInUser.getPassword().equals(currentPassword)) {
+	            sendMessage("Incorrect password. Password update cancelled.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //ask for new password and confirmation
+	        sendMessage("Enter your new password:");
+	        String newPassword = (String) in.readObject();
+
+	        sendMessage("Confirm your new password:");
+	        String confirmPassword = (String) in.readObject();
+
+	        //compare the two new passwords
+	        if (!newPassword.equals(confirmPassword)) {
+	            sendMessage("Passwords do not match. Please try again.");
+	            authenticatedMenu();
+	            return;
+	        }
+
+	        //update password in the users map
+	        loggedInUser.setPassword(newPassword);  //update using setter
+	        users.put(loggedInUser.getEmail(), loggedInUser);
+
+	        sendMessage("Password updated successfully!");
+	        System.out.println("User " + loggedInUser.getName() + " updated their password.");
+
+	        //return to menu
+	        authenticatedMenu();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        sendMessage("An error occurred while updating your password. Please try again.");
+	        authenticatedMenu();
+	    }
+	}
 }
