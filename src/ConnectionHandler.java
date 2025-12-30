@@ -1,3 +1,4 @@
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import model.Book;
 import model.LibraryRecord;
 import model.User;
 
@@ -20,6 +22,8 @@ public class ConnectionHandler extends Thread {
 																	// user details as the value
 	public static final List<LibraryRecord> records = DataPersistence.loadRecords(); //hold all created library records 
 	
+	public static final List<Book> books = DataPersistence.loadBooks();
+
 	
 	private Socket connection;
 	private ObjectOutputStream out;
@@ -296,6 +300,12 @@ public class ConnectionHandler extends Thread {
 
 	            sendMessage("Enter author name:");
 	            String authorName = (String) in.readObject();
+	            
+	            Book newBook = new Book(bookTitle, bookTitle, authorName);
+	            books.add(newBook);
+	            DataPersistence.saveBooks(books);
+	            
+	            sendMessage("Book added successfully: " + bookTitle + " by " + authorName);
 
 	            //include book details in record type for display
 	            recordType = "New Book Entry - " + bookTitle + " by " + authorName;

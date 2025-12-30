@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 
+import model.Book;
 import model.LibraryRecord;
 import model.User;
 
@@ -69,6 +70,16 @@ public class DataPersistence {
             System.out.println("No existing record data found. Starting fresh.");
             return new ArrayList<>();
         }
-    } 
+    }
+
+	public static List<Book> loadBooks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void saveBooks(List<Book> books) {
+		// TODO Auto-generated method stub
+		
+	} 
     
 }
