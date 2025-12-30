@@ -38,7 +38,8 @@ public class Requester{
 					
 					//continue, to keep messaging loop in sync
 					if(message.contains("successful") || message.contains("unsuccessful") || message.contains("Try again")|| message.contains("Invalid")|| message.contains("Displaying")|| message.contains("Record ID: ")|| message.contains("No record found with ID: ")|| message.contains("No record found with ID: ")
-							|| message.contains("This record is not a borrowing request and cannot be assigned.")|| message.contains("This borrowing request has already been processed.")|| message.contains("Access denied. Only librarians can view assigned records.")|| message.contains("No records have been assigned to you.")|| message.contains("Incorrect password. Password update cancelled.")|| message.contains("Invalid email format. Please use a valid email ")) {
+							|| message.contains("This record is not a borrowing request and cannot be assigned.")|| message.contains("This borrowing request has already been processed.")|| message.contains("Access denied. Only librarians can view assigned records.")|| message.contains("No records have been assigned to you.")|| message.contains("Incorrect password. Password update cancelled.")|| message.contains("Invalid email format. Please use a valid email ")
+							|| message.contains("Book added successfully:")|| message.contains("Borrow request created successfully!")|| message.contains("Password updated successfully!")) {
 						continue; 
 					}
 					
