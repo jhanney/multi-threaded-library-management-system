@@ -1,7 +1,15 @@
 package model;
 
-public class User {
+import java.io.Serializable;
 
+//implements serialisable  so java can write to the file using objectOutputStream
+
+public class User implements Serializable{
+
+	/**
+	 * added default serializable version from warning
+	 */
+	private static final long serialVersionUID = 1L;
 	// variables
 	private String name;
 	private String studentId;

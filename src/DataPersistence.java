@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 
+import model.LibraryRecord;
 import model.User;
 
 
@@ -43,5 +44,31 @@ public class DataPersistence {
         }
     }
     
+    /**
+     * saves the list of library records to a file for persistence
+     *
+     * the method serializes the List of LibraryRecord objects and writes it
+     * to the file defined by RECORD_FILE ("records.dat"). It ensures that all
+     * created or updated library records are retained after the server restarts
+     */
+    
+    public static void saveRecords(List<LibraryRecord> records) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(RECORD_FILE))) {
+            out.writeObject(records);
+            System.out.println("Records saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static List<LibraryRecord> loadRecords() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(RECORD_FILE))) {
+            return (List<LibraryRecord>) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("No existing record data found. Starting fresh.");
+            return new ArrayList<>();
+        }
+    } 
     
 }

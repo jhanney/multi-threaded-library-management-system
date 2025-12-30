@@ -16,9 +16,9 @@ public class ConnectionHandler extends Thread {
 
 	public static final Set<String> usedIds = new HashSet<>(); // hashset to store usedIds, using a hashset as all items
 																// added must be unique
-	public static final Map<String, User> users = new HashMap<>(); // String used as key, User object containing all
+	public static final Map<String, User> users = DataPersistence.loadUsers(); // String used as key, User object containing all
 																	// user details as the value
-	public static final List<LibraryRecord> records = new ArrayList<>(); //hold all created library records 
+	public static final List<LibraryRecord> records = DataPersistence.loadRecords(); //hold all created library records 
 	
 	
 	private Socket connection;
@@ -189,6 +189,9 @@ public class ConnectionHandler extends Thread {
 			User newUser = new User(name, id, email, password, department, role);
 			users.put(email, newUser);
 			usedIds.add(id);
+			
+			DataPersistence.saveUsers(users);//save user
+
 
 			 sendMessage("Registration successful! Welcome, " + name + " (" + role + ")");
 		     System.out.println("New user registered: " + name + " (" + role + ")");
@@ -283,22 +286,34 @@ public class ConnectionHandler extends Thread {
 
 	        String recordType;
 	        String status;
+	        String recordId;
 
 	        // Step 2:determine record type and status
 	        if (recordChoice.trim().equals("1")) {
-	            recordType = "New Book Entry";
+	            //ask for book details
+	            sendMessage("Enter book title:");
+	            String bookTitle = (String) in.readObject();
+
+	            sendMessage("Enter author name:");
+	            String authorName = (String) in.readObject();
+
+	            //include book details in record type for display
+	            recordType = "New Book Entry - " + bookTitle + " by " + authorName;
 	            status = "Available";
+	            
+	            int recordNumber = records.size() + 1; //assign next number to record
+		        recordId = String.format("R%03d", recordNumber); //format the id With R + a number up to 3 digits
 	        } else if (recordChoice.trim().equals("2")) {
 	            recordType = "Borrow Request";
 	            status = "Requested";
+	            
+	            int recordNumber = records.size() + 1;
+	            recordId = String.format("B%03d", recordNumber);
 	        } else {
 	            sendMessage("Invalid record type. Record creation cancelled.");
 	            return;
 	        }
 
-	        // Step 3:generate unique record ID
-	        int recordNumber = records.size() + 1; //assign next number to record
-	        String recordId = String.format("R%03d", recordNumber); //format the id With R + a number up to 3 digits
 
 	        // Step 4:gather other details
 	        String date = java.time.LocalDate.now().toString();
@@ -315,6 +330,8 @@ public class ConnectionHandler extends Thread {
 	                librarianId);
 
 	        records.add(newRecord);//add the new record
+	        
+	        DataPersistence.saveRecords(records); //save record
 
 	        // Step 6:confirm creation
 	        sendMessage("Record created successfully!"
@@ -463,6 +480,8 @@ public class ConnectionHandler extends Thread {
 	        //replace the old record with the updated one
 	        int index = records.indexOf(recordToAssign);
 	        records.set(index, updated);
+	        
+	        DataPersistence.saveRecords(records);//save record
 
 	        //confirm to user
 	        sendMessage("Borrow request " + requestedId + " has been successfully assigned!"
@@ -586,6 +605,8 @@ public class ConnectionHandler extends Thread {
 	        //update password in the users map
 	        loggedInUser.setPassword(newPassword);  //update using setter
 	        users.put(loggedInUser.getEmail(), loggedInUser);
+	        
+	        DataPersistence.saveUsers(users);//save password to users
 
 	        sendMessage("Password updated successfully!");
 	        System.out.println("User " + loggedInUser.getName() + " updated their password.");
