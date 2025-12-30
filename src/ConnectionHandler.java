@@ -339,7 +339,7 @@ public class ConnectionHandler extends Thread {
 	            
 	            //create record id
 	            int recordNumber = records.size() + 1;
-	            recordId = String.format("B%03d", recordNumber);
+	            recordId = String.format("R%03d", recordNumber);
 	            
 	            //create and save the borrow request record
 	            String date = java.time.LocalDate.now().toString();
@@ -501,7 +501,7 @@ public class ConnectionHandler extends Thread {
 	        }
 
 	        //make sure it is a borrow request
-	        if (!recordToAssign.recordType().equalsIgnoreCase("Borrow Request")) {
+	        if (!recordToAssign.recordType().contains("Borrow Request")) {
 	            sendMessage("This record is not a borrowing request and cannot be assigned.");
 	            authenticatedMenu();
 	            return;
