@@ -317,8 +317,52 @@ public class ConnectionHandler extends Thread {
 	            recordType = "Borrow Request";
 	            status = "Requested";
 	            
+	            //ask for the book title the user wants to borrow
+	            sendMessage("Enter the title of the book you want to borrow:");
+	            String requestedTitle = (String) in.readObject();
+
+	            //check if the book exists in the system
+	            Book matchingBook = null;
+	            for (Book book : books) {
+	                if (book.title().equalsIgnoreCase(requestedTitle)) {
+	                    matchingBook = book;
+	                    break;
+	                }
+	            }
+
+	            //handle case of missing book
+	            if (matchingBook == null) {
+	                sendMessage("Book not found in the system. Please register it first.");
+	                authenticatedMenu();
+	                return;
+	            }
+	            
+	            //create record id
 	            int recordNumber = records.size() + 1;
 	            recordId = String.format("B%03d", recordNumber);
+	            
+	            //create and save the borrow request record
+	            String date = java.time.LocalDate.now().toString();
+	            String studentId = loggedInUser.getStudentId();
+	            String librarianId = "";
+
+	            LibraryRecord newRecord = new LibraryRecord(
+	                recordId,
+	                "Borrow Request for '" + matchingBook.title() + "'",
+	                date,
+	                studentId,
+	                status,
+	                librarianId
+	            );
+	            
+	            records.add(newRecord);//add the record
+	            DataPersistence.saveRecords(records);//save the record 
+
+	            //contact user on completion
+	            sendMessage("Borrow request created successfully!"
+	                + "\nRecord ID: " + recordId
+	                + "\nBook: " + matchingBook.title()
+	                + "\nStatus: " + status);
 	        } else {
 	            sendMessage("Invalid record type. Record creation cancelled.");
 	            return;

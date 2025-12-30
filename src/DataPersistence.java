@@ -10,6 +10,7 @@ public class DataPersistence {
 	
 	private static final String USER_FILE = "users.dat"; //file where user data save
     private static final String RECORD_FILE = "records.dat";//file for record data
+    private static final String BOOK_FILE = "books.dat"; //file for serialised book data
     
     /**
      * saves the current list of registered users to a file for persistence.
@@ -72,14 +73,26 @@ public class DataPersistence {
         }
     }
 
-	public static List<Book> loadBooks() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public static void saveBooks(List<Book> books) {
-		// TODO Auto-generated method stub
-		
-	} 
+    //method that works the same as others in the class for serlializing list of books and writing it to file
+    public static void saveBooks(List<Book> books) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(BOOK_FILE))) {
+            out.writeObject(books);
+            System.out.println("Books saved successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error saving books to file.");
+        }
+    }
+    
+    //method that works the same as others in the class for serlializing list of books and reading it from the file
+    @SuppressWarnings("unchecked")
+    public static List<Book> loadBooks() {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(BOOK_FILE))) {
+            return (List<Book>) in.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("No existing book data found. Starting fresh.");
+            return new ArrayList<>(); //return empty list if null
+        }
+    }
     
 }
